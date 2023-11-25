@@ -2,6 +2,12 @@
 name = "surreal_bb8"
 version = "0.1.0"
 edition = "2021"
+authors = ["Brian Heise"]
+description = "An async connection pool for SurrealDB built on top of the bb8 library."
+repository = "https://github.com/toadslop/surreal_bb8"
+license = "MIT OR Apache-2.0"
+keywords = ["surrealdb", "connection_pool", "bb8", "database", "async"]
+categories = ["database", "web-programming"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
