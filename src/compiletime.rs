@@ -7,7 +7,7 @@ use std::marker::PhantomData;
 use surrealdb::opt::IntoEndpoint;
 use surrealdb::{Error, Surreal};
 
-/// A `bb8::ManageConnection` for `Surreal`. Use this implementation if you
+/// A [bb8::ManageConnection] for [surrealdb::Surreal]. Use this implementation if you
 /// know at compile time what kind of Surreal database client you need.
 #[derive(Clone)]
 pub struct SurrealConnectionManager<Config, Scheme>
@@ -15,7 +15,8 @@ where
     Config: IntoEndpoint<Scheme>,
 {
     /// A valid Surreal configuration, which is any type that implements
-    /// `IntoEndpoint`. https://docs.rs/surrealdb/latest/surrealdb/opt/trait.IntoEndpoint.html
+    /// [surrealdb::opt::IntoEndpoint]. Refer to the `IntoEndpoint` documentation
+    /// for the valid types.
     config: Config,
     scheme: PhantomData<Scheme>,
 }
@@ -24,9 +25,9 @@ impl<Config, Scheme> SurrealConnectionManager<Config, Scheme>
 where
     Config: IntoEndpoint<Scheme>,
 {
-    /// Create a new `SurrealConnectionManager` with the specified configuration
-    /// For possible configuration options, see the Surreal documentation:
-    /// https://docs.rs/surrealdb/latest/surrealdb/opt/trait.IntoEndpoint.html.
+    /// Create a new [SurrealConnectionManager] with the specified configuration
+    /// For possible configuration options, see the Surreal documentation for
+    /// [surrealdb::opt::IntoEndpoint]
     pub fn new(config: Config) -> SurrealConnectionManager<Config, Scheme> {
         Self {
             config,

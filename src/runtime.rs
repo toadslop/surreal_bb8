@@ -8,32 +8,32 @@ use surrealdb::{
     Error, Surreal,
 };
 
-/// A `bb8::ManageConnection` for `Surreal<Any>`. If you need to determine what kind
-/// of SurrealDb connection you need at runtime.
+/// A [bb8::ManageConnection] for [surrealdb::Surreal<Any>]. If you need to determine what kind
+/// of SurrealDb connection you need at runtime, use this connection manager.
 #[derive(Clone)]
-pub struct SurrealAnyConnectionManager<Config>
+pub struct SurrealRuntimeConnectionManager<Config>
 where
     Config: IntoEndpoint,
 {
     /// A valid Surreal configuration, which is any type that implements
-    /// `IntoEndpoint`. https://docs.rs/surrealdb/latest/surrealdb/engine/any/trait.IntoEndpoint.html
+    /// [surrealdb::engine::any::IntoEndpoint]. Refer to the documentation for various configuration options.
     config: Config,
 }
 
-impl<Config> SurrealAnyConnectionManager<Config>
+impl<Config> SurrealRuntimeConnectionManager<Config>
 where
     Config: IntoEndpoint,
 {
-    /// Create a new `SurrealAnyConnectionManager` with the specified configuration
-    /// For possible configuration options, see the Surreal documentation:
-    /// https://docs.rs/surrealdb/latest/surrealdb/engine/any/trait.IntoEndpoint.html
-    pub fn new(config: Config) -> SurrealAnyConnectionManager<Config> {
+    /// Create a new [SurrealRuntimeConnectionManager] with the specified configuration
+    /// For possible configuration options, see the Surreal documentation for
+    /// [surrealdb::engine::any::IntoEndpoint]
+    pub fn new(config: Config) -> SurrealRuntimeConnectionManager<Config> {
         Self { config }
     }
 }
 
 #[async_trait]
-impl<Config> bb8::ManageConnection for SurrealAnyConnectionManager<Config>
+impl<Config> bb8::ManageConnection for SurrealRuntimeConnectionManager<Config>
 where
     Config: IntoEndpoint + Send + Sync + 'static + Clone,
 {
@@ -53,12 +53,12 @@ where
     }
 }
 
-impl<Config> fmt::Debug for SurrealAnyConnectionManager<Config>
+impl<Config> fmt::Debug for SurrealRuntimeConnectionManager<Config>
 where
     Config: IntoEndpoint + Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("SurrealAnyConnectionManager")
+        f.debug_struct("SurrealRuntimeConnectionManager")
             .field("config", &self.config)
             .finish()
     }
