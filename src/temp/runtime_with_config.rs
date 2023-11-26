@@ -10,21 +10,24 @@ use surrealdb::{
 
 use super::config::Config;
 
-/// A [bb8::ManageConnection] for [surrealdb::Surreal<Any>]. If you need to determine what kind
-/// of SurrealDb connection you need at runtime, use this connection manager.
+/// A workaround for current limitations in the SurrealDb codebase. SurrealDb's [surrealdb::opt::Config]
+/// struct does not implement [Clone] in the current version, making it impossible to use in a connection
+/// pool as we need to be able to clone the configuration for each new connection. This workaround
+/// allows you to configure the connection, but as a downside you may only pass the address to your
+/// Surreal instance as a string.
 #[derive(Clone)]
-pub struct SurrealRuntimeConnectionManager {
+pub struct SurrealConnectionManager {
     /// A valid Surreal configuration, which is any type that implements
     /// [surrealdb::engine::any::IntoEndpoint]. Refer to the documentation for various configuration options.
     config: Config,
     path: String,
 }
 
-impl SurrealRuntimeConnectionManager {
-    /// Create a new [SurrealRuntimeConnectionManager] with the specified configuration
+impl SurrealConnectionManager {
+    /// Create a new [SurrealConnectionManager] with the specified configuration
     /// For possible configuration options, see the Surreal documentation for
     /// [surrealdb::engine::any::IntoEndpoint]
-    pub fn new(config: Config, path: &str) -> SurrealRuntimeConnectionManager {
+    pub fn new(config: Config, path: &str) -> SurrealConnectionManager {
         Self {
             config,
             path: path.to_owned(),
@@ -33,7 +36,7 @@ impl SurrealRuntimeConnectionManager {
 }
 
 #[async_trait]
-impl bb8::ManageConnection for SurrealRuntimeConnectionManager {
+impl bb8::ManageConnection for SurrealConnectionManager {
     type Connection = Surreal<Any>;
     type Error = Error;
 
@@ -50,9 +53,9 @@ impl bb8::ManageConnection for SurrealRuntimeConnectionManager {
     }
 }
 
-impl fmt::Debug for SurrealRuntimeConnectionManager {
+impl fmt::Debug for SurrealConnectionManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("SurrealRuntimeConnectionManager")
+        f.debug_struct("SurrealConnectionManager")
             .field("config", &self.config)
             .finish()
     }

@@ -10,6 +10,12 @@ use surrealdb::{
 
 /// A [bb8::ManageConnection] for [surrealdb::Surreal<Any>]. If you need to determine what kind
 /// of SurrealDb connection you need at runtime, use this connection manager.
+///
+/// ## Known issues
+/// Due to the fact that [surrealdb::opt::Config] does not implement clone in version
+/// 1.0.0, it is not possible to use a configuration on this [SurrealConnectionManager].
+/// If you need to configure your connection, use the temporary workaround in
+/// [crate::temp::runtime_with_config::SurrealConnectionManager].
 #[derive(Clone)]
 pub struct SurrealConnectionManager<Config>
 where

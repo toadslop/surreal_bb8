@@ -27,31 +27,31 @@
 //!
 //! ```
 //! use bb8::Pool;
-//! use surreal_bb8::surreal::SurrealConnectionManager;
-//! use surrealdb::engine::remote::mem::Mem;
+//! use surreal_bb8::temp::{compiletime_with_config::SurrealConnectionManager, config::Config};
+//! use surrealdb::{engine::remote::ws::Ws, opt::capabilities::Capabilities};
 //!
-//! let sur_mgr = SurrealConnectionManager::<_, Mem>::new(());
+//!#[tokio::main]
+//!async fn main() {
+//!    let config = Config::new()
+//!        .capabilities(Capabilities::default().with_guest_access(false))
+//!        .strict();
 //!
-//! let pool = Pool::builder().build(sur_mgr).await.expect("build error");
 //!
-//! let connection = pool.get().await.expect("pool error");
+//!    let sur_mgr: SurrealConnectionManager<Ws> =
+//!        SurrealConnectionManager::new("127.0.0.1:8000", config);
 //!
-//! connection
-//!    .health()
-//!    .await
-//!    .expect("Connection was not healthy");
+//!    let pool = Pool::builder().build(sur_mgr).await.expect("build error");
 //!
-//! println!("Connection is healthy")
+//!    let connection = pool.get().await.expect("pool error");
+//!
+//!    connection
+//!        .health()
+//!        .await
+//!        .expect("Connection was not healthy");
+//!
+//!    println!("Connection is healthy")
+//!}
 //! ```
-//!
-//! ## Limitations
-//!
-//! The current implementation of SurrealDb's [surrealdb::opt::Config] struct lacks
-//! a [Clone] implementation. However, in order to manage multiple connections in
-//! a connection pool, we need to be able to clone the configuration. For this reason,
-//! it currently isn't possible to use this connection pool with a custom configuration.
-//! This limitation will be lifted when SurrealDb version 1.1.0 is released, as this
-//! new version includes an implementation of [Clone] on `Config`.
 //!
 
 #![deny(missing_docs, missing_debug_implementations)]

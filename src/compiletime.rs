@@ -9,6 +9,12 @@ use surrealdb::{Error, Surreal};
 
 /// A [bb8::ManageConnection] for [surrealdb::Surreal]. Use this implementation if you
 /// know at compile time what kind of Surreal database client you need.
+///
+/// ## Known issues
+/// Due to the fact that [surrealdb::opt::Config] does not implement clone in version
+/// 1.0.0, it is not possible to use a configuration on this [SurrealConnectionManager].
+/// If you need to configure your connection, use the temporary workaround in
+/// [crate::temp::compiletime_with_config::SurrealConnectionManager].
 #[derive(Clone)]
 pub struct SurrealConnectionManager<Config, Scheme>
 where
