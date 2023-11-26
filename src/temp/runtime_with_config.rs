@@ -2,46 +2,43 @@
 //! at runtime.
 
 use async_trait::async_trait;
-use std::fmt::{self, Debug};
+use std::fmt::{self};
 use surrealdb::{
-    engine::any::{connect, Any, IntoEndpoint},
+    engine::any::{connect, Any},
     Error, Surreal,
 };
+
+use super::config::Config;
 
 /// A [bb8::ManageConnection] for [surrealdb::Surreal<Any>]. If you need to determine what kind
 /// of SurrealDb connection you need at runtime, use this connection manager.
 #[derive(Clone)]
-pub struct SurrealConnectionManager<Config>
-where
-    Config: IntoEndpoint,
-{
+pub struct SurrealRuntimeConnectionManager {
     /// A valid Surreal configuration, which is any type that implements
     /// [surrealdb::engine::any::IntoEndpoint]. Refer to the documentation for various configuration options.
     config: Config,
+    path: String,
 }
 
-impl<Config> SurrealConnectionManager<Config>
-where
-    Config: IntoEndpoint,
-{
-    /// Create a new [SurrealConnectionManager] with the specified configuration
+impl SurrealRuntimeConnectionManager {
+    /// Create a new [SurrealRuntimeConnectionManager] with the specified configuration
     /// For possible configuration options, see the Surreal documentation for
     /// [surrealdb::engine::any::IntoEndpoint]
-    pub fn new(config: Config) -> SurrealConnectionManager<Config> {
-        Self { config }
+    pub fn new(config: Config, path: &str) -> SurrealRuntimeConnectionManager {
+        Self {
+            config,
+            path: path.to_owned(),
+        }
     }
 }
 
 #[async_trait]
-impl<Config> bb8::ManageConnection for SurrealConnectionManager<Config>
-where
-    Config: IntoEndpoint + Send + Sync + 'static + Clone,
-{
+impl bb8::ManageConnection for SurrealRuntimeConnectionManager {
     type Connection = Surreal<Any>;
     type Error = Error;
 
     async fn connect(&self) -> Result<Self::Connection, Self::Error> {
-        Ok(connect(self.config.clone()).await?)
+        Ok(connect((self.path.clone(), self.config.clone().into())).await?)
     }
 
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
@@ -53,12 +50,9 @@ where
     }
 }
 
-impl<Config> fmt::Debug for SurrealConnectionManager<Config>
-where
-    Config: IntoEndpoint + Debug,
-{
+impl fmt::Debug for SurrealRuntimeConnectionManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("SurrealConnectionManager")
+        f.debug_struct("SurrealRuntimeConnectionManager")
             .field("config", &self.config)
             .finish()
     }
