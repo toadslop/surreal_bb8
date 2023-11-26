@@ -4,7 +4,9 @@ Surreal_BB8 is an async connection pool for SurrealDB implemented on top of the 
 Refer to the [bb8 documentation](https://docs.rs/bb8/latest/bb8/) for more information about
 how to use BB8 connection pools.
 
-## Basic Usage
+## Usage
+
+### Basic Usage
 
 ```rust
 use bb8::Pool;
@@ -25,7 +27,7 @@ connection
 println!("Connection is healthy")
 ```
 
-## With a configuration
+### With a configuration
 
 ```rust
 use bb8::Pool;
@@ -54,3 +56,8 @@ async fn main() {
    println!("Connection is healthy")
 }
 ```
+
+## Issues
+
+If you have an issue, please let us know [here](https://github.com/toadslop/surreal_bb8/issues).
+If you have any improvements to make, please send us a [PR](https://github.com/toadslop/surreal_bb8/issues).
